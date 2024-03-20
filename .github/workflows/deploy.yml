@@ -1,0 +1,47 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest  
+
+    steps:
+      - uses: actions/checkout@v3  # Checkout code from GitHub
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20  # Adjust node version based on your project
+
+      - name: Install dependencies
+        run: npm install  # Install project dependencies using npm
+
+      - name: Build project (replace with your build command)
+        run: npm run build  # Example build command, adjust for your project
+
+  deploy:  # New job for deployment
+    name: Deploy to platform (replace with your platform)
+    runs-on: window-latest  # You can use a different runner for deployment
+
+    needs: build  # This job depends on the successful completion of the 'build' job
+
+    steps:
+      - uses: actions/checkout@v3  # Checkout code (optional, can inherit from 'build' job)
+
+      # Add deployment steps specific to your platform here (replace with your commands)
+      - name: Deploy to AWS S3 (Example)
+        uses: aws-actions/aws-s3-deploy@v2.0.1
+        with:
+          aws-bucket: your-bucket-name  # Replace with your S3 bucket name
+          region: your-aws-region  # Replace with your AWS region
+          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Access key from GitHub Secrets
+          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # Secret access key from GitHub Secrets
+          local-base: dist/  # Path to your built project (adjust for your project)
+          path: your-deployment-path/  # Optional path within the S3 bucket
+
+
+
